@@ -8,11 +8,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
-# Redirect rules for SPA
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Redirect rules - removed to prevent conflicts
 
 # Headers for security
 [[headers]]

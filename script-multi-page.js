@@ -100,7 +100,17 @@ function loadData(){
     if(!raw) return seed(defaultTemplate);
     const parsed = JSON.parse(raw);
     if(!Array.isArray(parsed)) return seed(defaultTemplate);
-    return parsed;
+    
+    // Ensure all items have proper boolean done values
+    const normalized = parsed.map(section => ({
+      ...section,
+      items: section.items.map(item => ({
+        ...item,
+        done: Boolean(item.done) // Ensure it's explicitly boolean
+      }))
+    }));
+    
+    return normalized;
   }catch(e){
     console.warn("Load failed, using defaults", e);
     return seed(defaultTemplate);
@@ -354,12 +364,15 @@ function renderSectionPage() {
   }else{
     visibleItems.forEach((item)=>{
       const listItem = el("li",{class:"item","data-id":item.id});
-      const checkbox = el("input",{type:"checkbox",checked:item.done ? "checked":null,
+      const checkbox = el("input",{
+        type:"checkbox",
+        checked: item.done === true ? "checked" : null,
         onchange:(e)=>{ 
           item.done = e.target.checked; 
           saveData(state); 
           render(); 
-        }});
+        }
+      });
       const textEl = el("div",{class:"text",contenteditable:"true",spellcheck:"false",
         onblur:(e)=>{ 
           item.text = e.target.textContent.trim() || "New item"; 
@@ -425,7 +438,9 @@ document.getElementById("addSectionBtn").addEventListener("click", ()=>{
 });
 
 document.getElementById("resetBtn").addEventListener("click", ()=>{
-  if(confirm("Reset to the default template? This will replace your current checklist.")){
+  if(confirm("Reset to the default template? This will replace your current checklist and clear all progress.")){
+    // Clear localStorage first to ensure clean reset
+    localStorage.removeItem(STORAGE_KEY);
     state = seed(defaultTemplate); 
     render();
   }
@@ -455,7 +470,7 @@ document.getElementById("importFile").addEventListener("change", (e)=>{
         items: Array.isArray(sec.items) ? sec.items.map(it=>({
           id: it.id || generateId(),
           text: String(it.text || ""),
-          done: !!it.done
+          done: Boolean(it.done === true) // Ensure explicit boolean false for unchecked
         })) : []
       }));
       saveData(state); 

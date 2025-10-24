@@ -1,4 +1,4 @@
-/* ---------- Data & Storage (Multi-Page Version) ---------- */
+/* ---------- Multi-Page Web Checklist Application ---------- */
 const STORAGE_KEY = "prelaunch-checklist-v2";
 
 const defaultTemplate = [
@@ -93,7 +93,7 @@ const defaultTemplate = [
   }
 ];
 
-// Static version - uses localStorage
+/* ---------- Data Management ---------- */
 function loadData(){
   try{
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -122,12 +122,10 @@ function saveData(data){
   setSavedState();
 }
 
-// Generate ID (client-side)
 function generateId() {
   try {
     return crypto.randomUUID();
   } catch {
-    // Fallback for older browsers
     return 'xxxx-xxxx-4xxx-yxxx'.replace(/[xy]/g, function(c) {
       const r = Math.random() * 16 | 0;
       const v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -143,7 +141,7 @@ let currentPage = "overview";
 
 /* ---------- Page Mapping ---------- */
 const pageMapping = {
-  overview: null, // Special case for overview
+  overview: null,
   strategy: "Strategy & Setup",
   design: "Design & User Experience", 
   technical: "Technical Functionality",
@@ -188,9 +186,53 @@ function setSavedState(){
   setSavedState._t = setTimeout(()=>{ btn.textContent="Saved"; }, 800);
 }
 
-function markDirty(){
-  const btn = document.getElementById("saveBtn");
-  btn.textContent = "Saving…";
+function getIconForSection(title) {
+  const iconMap = {
+    "Strategy & Setup": "🎯",
+    "Design & User Experience": "🎨", 
+    "Technical Functionality": "⚙️",
+    "SEO Optimization": "🔍",
+    "eCommerce": "🛒",
+    "Legal & Compliance": "⚖️",
+    "Performance & Security": "⚡",
+    "Launch & Monitoring": "🚀"
+  };
+  return iconMap[title] || "📋";
+}
+
+/* ---------- Navigation ---------- */
+function setCurrentPage(page) {
+  currentPage = page;
+  updateNavTabs();
+  render();
+}
+
+function updateNavTabs() {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.page === currentPage);
+  });
+}
+
+function updateNavigation() {
+  // Update progress indicators for each tab
+  Object.keys(pageMapping).forEach(pageKey => {
+    const progressEl = document.getElementById(`${pageKey}-progress`);
+    if (!progressEl) return;
+    
+    if (pageKey === 'overview') {
+      const total = state.reduce((acc, section) => acc + section.items.length, 0);
+      const completed = state.reduce((acc, section) => acc + section.items.filter(item => item.done).length, 0);
+      progressEl.textContent = `${completed}/${total}`;
+    } else {
+      const sectionTitle = pageMapping[pageKey];
+      const section = state.find(s => s.title === sectionTitle);
+      if (section) {
+        const completed = section.items.filter(item => item.done).length;
+        const total = section.items.length;
+        progressEl.textContent = `${completed}/${total}`;
+      }
+    }
+  });
 }
 
 /* ---------- Rendering ---------- */
@@ -198,7 +240,7 @@ const app = document.getElementById("app");
 const pageTitle = document.getElementById("page-title");
 const pageStats = document.getElementById("page-stats");
 
-function render(){
+function render() {
   app.innerHTML = "";
   
   if (currentPage === "overview") {
@@ -224,7 +266,7 @@ function renderOverview() {
     </div>
   `;
   
-  state.forEach((section, sIdx) => {
+  state.forEach((section) => {
     const sectionKey = Object.keys(pageMapping).find(key => pageMapping[key] === section.title);
     const completedCount = section.items.filter(item => item.done).length;
     const totalCount = section.items.length;
@@ -283,8 +325,8 @@ function renderSectionPage() {
   const visibleItems = section.items.filter(it => matchSection || it.text.toLowerCase().includes(q));
   const sIdx = state.findIndex(s => s.title === sectionTitle);
 
-  const sec = el("section", {class:"section", "data-id":section.id});
-  const head = el("div",{class:"section-title"},
+  const sectionEl = el("section", {class:"section", "data-id":section.id});
+  const header = el("div",{class:"section-title"},
     el("h2",{contenteditable:"true", class:"text", spellcheck:"false",
              onblur:(e)=>{ 
                section.title = e.target.textContent.trim() || "Untitled"; 
@@ -304,107 +346,76 @@ function renderSectionPage() {
     )
   );
 
-  sec.appendChild(head);
-    const matchSection = section.title.toLowerCase().includes(q);
-    const visibleItems = section.items.filter(it => matchSection || it.text.toLowerCase().includes(q));
+  sectionEl.appendChild(header);
 
-    const countDone = section.items.filter(i=>i.done).length;
-
-    const sec = el("section", {class:"section", "data-id":section.id});
-    const head = el("div",{class:"section-title"},
-      el("h2",{contenteditable:"true", class:"text", spellcheck:"false",
-               onblur:(e)=>{ 
-                 section.title = e.target.textContent.trim() || "Untitled"; 
-                 saveData(state); 
-               },
-               ondblclick:()=>{}}, section.title),
-      el("div",{},
-        el("span",{class:"pill"}, `${countDone}/${section.items.length} done `),
-        el("button",{class:"icon-btn", title:"Remove section",
+  const itemsList = el("ul",{class:"items"});
+  if(visibleItems.length===0){
+    itemsList.appendChild(el("li",{class:"empty"}, q ? "No results in this section" : "No items yet"));
+  }else{
+    visibleItems.forEach((item)=>{
+      const listItem = el("li",{class:"item","data-id":item.id});
+      const checkbox = el("input",{type:"checkbox",checked:item.done ? "checked":null,
+        onchange:(e)=>{ 
+          item.done = e.target.checked; 
+          saveData(state); 
+          render(); 
+        }});
+      const textEl = el("div",{class:"text",contenteditable:"true",spellcheck:"false",
+        onblur:(e)=>{ 
+          item.text = e.target.textContent.trim() || "New item"; 
+          saveData(state); 
+        },
+        ondblclick:()=>{}}, item.text);
+      const actions = el("div",{class:"row-actions"},
+        el("button",{class:"icon-btn",title:"Duplicate",
           onclick:()=>{
-            if(confirm("Delete this section and all its items?")){
-              state.splice(sIdx,1);
-              saveData(state); 
-              render();
-            }
-          }}, svgIcon("M6 7h12l-1 13H7L6 7Zm3-3h6l1 3H8l1-3Z"))
-      )
-    );
-
-    sec.appendChild(head);
-
-    const list = el("ul",{class:"items"});
-    if(visibleItems.length===0){
-      list.appendChild(el("li",{class:"empty"}, q ? "No results in this section" : "No items yet"));
-    }else{
-      visibleItems.forEach((item)=>{
-        const li = el("li",{class:"item","data-id":item.id});
-        const cb = el("input",{type:"checkbox",checked:item.done ? "checked":null,
-          onchange:(e)=>{ 
-            item.done = e.target.checked; 
-            saveData(state); 
-            render(); 
-          }});
-        const txt = el("div",{class:"text",contenteditable:"true",spellcheck:"false",
-          onblur:(e)=>{ 
-            item.text = e.target.textContent.trim() || "New item"; 
-            saveData(state); 
-          },
-          ondblclick:()=>{}}, item.text);
-        const actions = el("div",{class:"row-actions"},
-          el("button",{class:"icon-btn",title:"Duplicate",
-            onclick:()=>{
-              const clone = { id: generateId(), text:item.text, done:false };
-              const idx = section.items.findIndex(x=>x.id===item.id);
-              section.items.splice(idx+1,0,clone);
-              saveData(state); 
-              render();
-            }}, svgIcon("M4 7h9v11H4V7Zm7-3h9v11h-2V6h-7V4Z")),
-          el("button",{class:"icon-btn",title:"Delete",
-            onclick:()=>{
-              section.items = section.items.filter(x=>x.id!==item.id);
-              saveData(state); 
-              render();
-            }}, svgIcon("M6 7h12v2H6V7Zm1 3h10l-1 8H8l-1-8Zm3-5h4l1 2H9l1-2Z"))
-        );
-        li.append(cb, txt, actions);
-        list.appendChild(li);
-      });
-    }
-    sec.appendChild(list);
-
-    const adder = el("div",{class:"adder"},
-      el("input",{type:"text",placeholder:"Add a new item…", "aria-label":"New item",
-        onkeydown:(e)=>{
-          if(e.key==="Enter"){
-            const val = e.target.value.trim();
-            if(!val) return;
-            section.items.push({id:generateId(), text:val, done:false});
-            e.target.value=""; 
+            const clone = { id: generateId(), text:item.text, done:false };
+            const idx = section.items.findIndex(x=>x.id===item.id);
+            section.items.splice(idx+1,0,clone);
             saveData(state); 
             render();
-          }
-        }}),
-      el("button",{class:"primary",onclick:(e)=>{
-        const input = e.target.parentElement.querySelector("input");
-        const val = input.value.trim();
-        if(!val) return;
-        section.items.push({id:generateId(), text:val, done:false});
-        input.value=""; 
-        saveData(state); 
-        render();
-      }}, "Add")
-    );
-    sec.appendChild(adder);
+          }}, svgIcon("M4 7h9v11H4V7Zm7-3h9v11h-2V6h-7V4Z")),
+        el("button",{class:"icon-btn",title:"Delete",
+          onclick:()=>{
+            section.items = section.items.filter(x=>x.id!==item.id);
+            saveData(state); 
+            render();
+          }}, svgIcon("M6 7h12v2H6V7Zm1 3h10l-1 8H8l-1-8Zm3-5h4l1 2H9l1-2Z"))
+      );
+      listItem.append(checkbox, textEl, actions);
+      itemsList.appendChild(listItem);
+    });
+  }
+  sectionEl.appendChild(itemsList);
 
-    if(q && !matchSection && visibleItems.length===0){
-      return;
-    }
-    app.appendChild(sec);
-  });
+  const adder = el("div",{class:"adder"},
+    el("input",{type:"text",placeholder:"Add a new item…", "aria-label":"New item",
+      onkeydown:(e)=>{
+        if(e.key==="Enter"){
+          const val = e.target.value.trim();
+          if(!val) return;
+          section.items.push({id:generateId(), text:val, done:false});
+          e.target.value=""; 
+          saveData(state); 
+          render();
+        }
+      }}),
+    el("button",{class:"primary",onclick:(e)=>{
+      const input = e.target.parentElement.querySelector("input");
+      const val = input.value.trim();
+      if(!val) return;
+      section.items.push({id:generateId(), text:val, done:false});
+      input.value=""; 
+      saveData(state); 
+      render();
+    }}, "Add")
+  );
+  sectionEl.appendChild(adder);
+
+  app.appendChild(sectionEl);
 }
 
-/* ---------- Actions ---------- */
+/* ---------- Event Handlers ---------- */
 document.getElementById("addSectionBtn").addEventListener("click", ()=>{
   const name = prompt("Section name");
   if(!name) return;
@@ -473,5 +484,13 @@ document.getElementById("search").addEventListener("input", (e)=>{
   render();
 });
 
-/* ---------- Init ---------- */
-render();
+// Navigation event listeners
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      setCurrentPage(tab.dataset.page);
+    });
+  });
+  
+  render();
+});

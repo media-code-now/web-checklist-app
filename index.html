@@ -25,7 +25,67 @@
     </div>
   </header>
 
-  <main id="app" class="grid" aria-live="polite"></main>
+  <nav class="page-nav">
+    <div class="wrap">
+      <div class="nav-tabs">
+        <button class="nav-tab active" data-page="overview">
+          <span class="tab-icon">📊</span>
+          <span class="tab-text">Overview</span>
+          <span class="tab-progress" id="overview-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="strategy">
+          <span class="tab-icon">🎯</span>
+          <span class="tab-text">Strategy & Setup</span>
+          <span class="tab-progress" id="strategy-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="design">
+          <span class="tab-icon">🎨</span>
+          <span class="tab-text">Design & UX</span>
+          <span class="tab-progress" id="design-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="technical">
+          <span class="tab-icon">⚙️</span>
+          <span class="tab-text">Technical</span>
+          <span class="tab-progress" id="technical-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="seo">
+          <span class="tab-icon">🔍</span>
+          <span class="tab-text">SEO</span>
+          <span class="tab-progress" id="seo-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="ecommerce">
+          <span class="tab-icon">🛒</span>
+          <span class="tab-text">eCommerce</span>
+          <span class="tab-progress" id="ecommerce-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="legal">
+          <span class="tab-icon">⚖️</span>
+          <span class="tab-text">Legal</span>
+          <span class="tab-progress" id="legal-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="performance">
+          <span class="tab-icon">⚡</span>
+          <span class="tab-text">Performance</span>
+          <span class="tab-progress" id="performance-progress">0/0</span>
+        </button>
+        <button class="nav-tab" data-page="launch">
+          <span class="tab-icon">🚀</span>
+          <span class="tab-text">Launch</span>
+          <span class="tab-progress" id="launch-progress">0/0</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <div class="wrap">
+      <div class="page-header">
+        <h2 id="page-title">Overview</h2>
+        <div class="page-stats" id="page-stats"></div>
+      </div>
+      <div id="app" class="page-content" aria-live="polite"></div>
+    </div>
+  </main>
 
   <footer>
     <div class="footbar">
@@ -39,6 +99,6 @@
     </div>
   </footer>
 
-<script src="script-static.js"></script>
+<script src="script-multi-page.js"></script>
 </body>
 </html>

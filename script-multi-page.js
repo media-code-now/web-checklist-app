@@ -274,6 +274,9 @@ function renderOverview() {
       <span>Total Progress:</span>
       <span class="stat-value">${completedItems}/${totalItems} (${completionPercentage}%)</span>
     </div>
+    <div class="overview-actions">
+      <button onclick="uncheckAllItems()" class="uncheck-all-btn">Uncheck All Items</button>
+    </div>
   `;
   
   state.forEach((section) => {
@@ -426,6 +429,19 @@ function renderSectionPage() {
   sectionEl.appendChild(adder);
 
   app.appendChild(sectionEl);
+}
+
+/* ---------- Utility Functions ---------- */
+function uncheckAllItems() {
+  if(confirm("Uncheck all items? This will mark all tasks as incomplete so you can check them off as you complete them.")){
+    state.forEach(section => {
+      section.items.forEach(item => {
+        item.done = false;
+      });
+    });
+    saveData(state);
+    render();
+  }
 }
 
 /* ---------- Event Handlers ---------- */

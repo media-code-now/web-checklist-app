@@ -89,6 +89,18 @@ button:active{
   border-color:transparent;
 }
 
+.overview-actions{
+  margin-top: 16px;
+  text-align: center;
+}
+
+.uncheck-all-btn{
+  background: linear-gradient(135deg, var(--warn), #f97316);
+  border-color: transparent;
+  color: white;
+  font-weight: 600;
+}
+
 .success{
   background:linear-gradient(135deg,#16a34a,#22c55e); 
   border-color:transparent;

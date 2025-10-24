@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Pre-Launch Website Checklist</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="wrap toolbar">
+      <h1>Pre-Launch Website Checklist</h1>
+      <div class="controls">
+        <div class="search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.2-4.2M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <input id="search" type="search" placeholder="Search items or sections" />
+        </div>
+        <button class="ghost" id="addSectionBtn">Add Section</button>
+        <button class="ghost" id="resetBtn" title="Reset to default template">Reset</button>
+        <button class="ghost" id="printBtn">Print</button>
+        <button class="ghost" id="exportBtn" title="Download JSON">Export</button>
+        <label class="ghost" for="importFile" style="cursor:pointer">Import<input id="importFile" type="file" accept="application/json" hidden /></label>
+        <button class="primary" id="saveBtn" title="Data saves automatically to your browser">Saved</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app" class="grid" aria-live="polite"></main>
+
+  <footer>
+    <div class="footbar">
+      <div class="left">
+        <span class="pill">Tip: Double-click a title or item to edit</span>
+        <span class="pill">Changes save to database</span>
+      </div>
+      <div class="right">
+        <span class="kbd">⌘</span> + <span class="kbd">S</span> quick save
+      </div>
+    </div>
+  </footer>
+
+<script src="script.js"></script>
+</body>
+</html>

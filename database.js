@@ -462,6 +462,21 @@ class Database {
     });
   }
 
+  // Uncheck all items
+  uncheckAllItems() {
+    return new Promise((resolve, reject) => {
+      const query = "UPDATE items SET done = 0, updated_at = CURRENT_TIMESTAMP";
+      
+      this.db.run(query, (err) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ message: 'All items unchecked successfully', changes: this.changes });
+        }
+      });
+    });
+  }
+
   // Close database connection
   close() {
     this.db.close((err) => {

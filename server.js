@@ -153,6 +153,17 @@ app.post('/api/import', async (req, res) => {
   }
 });
 
+// Uncheck all items
+app.post('/api/uncheck-all', async (req, res) => {
+  try {
+    const result = await db.uncheckAllItems();
+    res.json(result);
+  } catch (error) {
+    console.error('Error unchecking all items:', error);
+    res.status(500).json({ error: 'Failed to uncheck all items' });
+  }
+});
+
 // Serve the backend HTML file for local development
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index-backend.html'));

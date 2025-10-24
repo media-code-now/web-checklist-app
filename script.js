@@ -154,7 +154,7 @@ function render(){
     }else{
       visibleItems.forEach((item)=>{
         const li = el("li",{class:"item","data-id":item.id});
-        const cb = el("input",{type:"checkbox",checked:item.done ? "checked":null,
+        const cb = el("input",{type:"checkbox",checked:item.done === true ? "checked":null,
           onchange:async (e)=>{ 
             try {
               await apiCall(`/items/${item.id}`, {
@@ -262,6 +262,20 @@ function render(){
     }
     app.appendChild(sec);
   });
+}
+
+/* ---------- Utility Functions ---------- */
+async function uncheckAllItems() {
+  if(confirm("Uncheck all items? This will mark all tasks as incomplete so you can check them off as you complete them.")){
+    try {
+      await apiCall('/api/uncheck-all', { method: 'POST' });
+      state = await loadData();
+      render();
+    } catch (error) {
+      console.error('Failed to uncheck all items:', error);
+      alert('Failed to uncheck all items. Please try again.');
+    }
+  }
 }
 
 /* ---------- Actions ---------- */

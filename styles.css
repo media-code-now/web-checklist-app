@@ -101,6 +101,14 @@ button:active{
   font-weight: 600;
 }
 
+.reset-all-btn{
+  background: linear-gradient(135deg, var(--danger), #dc2626);
+  border-color: transparent;
+  color: white;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
 .success{
   background:linear-gradient(135deg,#16a34a,#22c55e); 
   border-color:transparent;

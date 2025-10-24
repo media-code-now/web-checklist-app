@@ -276,6 +276,7 @@ function renderOverview() {
     </div>
     <div class="overview-actions">
       <button onclick="uncheckAllItems()" class="uncheck-all-btn">Uncheck All Items</button>
+      <button onclick="clearAllDataAndReset()" class="reset-all-btn">Reset All Data</button>
     </div>
   `;
   
@@ -440,6 +441,14 @@ function uncheckAllItems() {
       });
     });
     saveData(state);
+    render();
+  }
+}
+
+function clearAllDataAndReset() {
+  if(confirm("Clear all data and reset to default unchecked state? This will remove all your current data and start fresh.")){
+    localStorage.removeItem(STORAGE_KEY);
+    state = seed(defaultTemplate);
     render();
   }
 }

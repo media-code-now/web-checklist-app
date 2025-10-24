@@ -346,6 +346,10 @@ button:active{
   border-radius:12px;
 }
 
+.card-icon:empty{
+  display:none;
+}
+
 .card-content{
   flex:1;
 }

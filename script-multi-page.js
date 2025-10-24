@@ -197,17 +197,8 @@ function setSavedState(){
 }
 
 function getIconForSection(title) {
-  const iconMap = {
-    "Strategy & Setup": "🎯",
-    "Design & User Experience": "🎨", 
-    "Technical Functionality": "⚙️",
-    "SEO Optimization": "🔍",
-    "eCommerce": "🛒",
-    "Legal & Compliance": "⚖️",
-    "Performance & Security": "⚡",
-    "Launch & Monitoring": "🚀"
-  };
-  return iconMap[title] || "📋";
+  // Icons removed - return empty string
+  return "";
 }
 
 /* ---------- Navigation ---------- */

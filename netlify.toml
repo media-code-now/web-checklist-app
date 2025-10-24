@@ -11,7 +11,7 @@
 # Redirect rules for SPA
 [[redirects]]
   from = "/*"
-  to = "/index-static.html"
+  to = "/index.html"
   status = 200
 
 # Headers for security

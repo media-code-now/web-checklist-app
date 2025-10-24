@@ -153,9 +153,9 @@ app.post('/api/import', async (req, res) => {
   }
 });
 
-// Serve the main HTML file
+// Serve the backend HTML file for local development
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'index-backend.html'));
 });
 
 // Start the server
